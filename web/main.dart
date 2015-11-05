@@ -17,10 +17,29 @@ void main() {
   ButtonElement button = querySelector('#button');
   button.onClick.listen((MouseEvent e) {
     String value = input.value;
-    int precision = int.parse(value, onError: (String s) => 10);
-    pt.changePrecision(precision);
+    setPrecision(value);
+  });
+  input.onKeyPress.listen((KeyboardEvent e) {
+    switch(e.keyCode) {
+      case KeyCode.ENTER:
+        String value = input.value;
+        setPrecision(value);
+        break;
+      default:
+        break;
+    }
   });
   window.animationFrame.then(loop);
+}
+
+void setPrecision(String value) {
+  try {
+    int precision = int.parse(value);
+    pt.changePrecision(precision);
+  } catch(exception, stacktrace) {
+    print(exception);
+    print(stacktrace);
+  }
 }
 
 /// Recursive loop for animation
