@@ -13,13 +13,22 @@ PartyTile pt;
 void main() {
   DivElement div = querySelector('#output');
   pt = new PartyTile(div, 100);
+  InputElement input = querySelector('#input');
+  ButtonElement button = querySelector('#button');
+  button.onClick.listen((MouseEvent e) {
+    String value = input.value;
+    int precision = int.parse(value, onError: (String s) => 10);
+    pt.changePrecision(precision);
+  });
   window.animationFrame.then(loop);
 }
 
 /// Recursive loop for animation
 void loop(num delta) {
   if (delta - lastFrame > interval) {
-    pt.animate();
+    if (pt.ready) {
+      pt.animate();
+    }
     lastFrame = delta;
   }
   window.animationFrame.then(loop);
@@ -31,9 +40,19 @@ class PartyTile {
   int g;
   int b;
   double time;
+  bool ready;
 
   PartyTile(DivElement div, int precision) {
     this.div = div;
+    buildList(precision);
+    r = 0;
+    g = 0;
+    b = 0;
+    time = 0.0;
+  }
+
+  void buildList(int precision) {
+    ready = false;
     for (int i = 0; i < precision; i++) {
       DivElement divEl = new DivElement()
         ..style.float = 'left'
@@ -41,10 +60,15 @@ class PartyTile {
         ..style.width = '${100.0 / precision}%';
       div.children.add(divEl);
     }
-    r = 0;
-    g = 0;
-    b = 0;
-    time = 0.0;
+    ready = true;
+  }
+
+  void changePrecision(int precision) {
+    if (precision > 0 && precision != div.children.length) {
+      ready = false;
+      div.children.clear();
+      buildList(precision);
+    }
   }
 
   void animate() {
