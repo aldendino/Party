@@ -10,10 +10,9 @@ final double interval = 1000 / fps; // Animation interval
 
 PartyTile pt;
 
-
 void main() {
   DivElement div = querySelector('#output');
-  pt = new PartyTile(div);
+  pt = new PartyTile(div, 100);
   window.animationFrame.then(loop);
 }
 
@@ -33,8 +32,15 @@ class PartyTile {
   int b;
   double time;
 
-  PartyTile(DivElement div) {
+  PartyTile(DivElement div, int precision) {
     this.div = div;
+    for (int i = 0; i < precision; i++) {
+      DivElement divEl = new DivElement()
+        ..style.float = 'left'
+        ..style.height = '100%'
+        ..style.width = '${100.0 / precision}%';
+      div.children.add(divEl);
+    }
     r = 0;
     g = 0;
     b = 0;
@@ -52,9 +58,15 @@ class PartyTile {
 
     //print('rgb($r,$g,$b)');
 
-    div.style.backgroundColor = 'rgb($r,$g,$b)';
+    //div.style.backgroundColor = 'rgb($r,$g,$b)';
+
+    for (int i = div.children.length - 1; i > 0; i--) {
+      div.children.elementAt(i).style.backgroundColor =
+          div.children.elementAt(i - 1).style.backgroundColor;
+    }
+
+    div.children.elementAt(0).style.backgroundColor = 'rgb($r,$g,$b)';
 
     time += 0.1 % (2 * PI);
   }
-
 }
